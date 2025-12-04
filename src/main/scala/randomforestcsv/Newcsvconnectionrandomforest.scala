@@ -32,13 +32,13 @@ object Newcsvconnectionrandomforest {
     val currentInstant: Instant = Instant.now() // Represents a point in time
     val currentEpochSeconds: Long = currentInstant.getEpochSecond()
 
-    val source1 = "C:\\Users\\Admin\\Documents\\workspace\\newsparkshoesalesdata\\sales.csv"
+    val source1 = "https://github.com/shankybit/newmachinelearningcsvandneo/blob/c31110032749a5596cd2805a6c870b6f5cd05f40/sales.csv"
     val users_df_1 = spark.read.options(Map("inferSchema" -> "true", "header" -> "true")).csv(source1)
 
-    val source2 = "C:\\Users\\Admin\\Documents\\workspace\\newsparkshoesalesdata\\shoes.csv"
+    val source2 = "https://github.com/shankybit/newmachinelearningcsvandneo/blob/c31110032749a5596cd2805a6c870b6f5cd05f40/shoes.csv"
     val users_df_2 = spark.read.options(Map("inferSchema" -> "true", "header" -> "true")).csv(source2)
 
-    val source3 = "C:\\Users\\Admin\\Documents\\workspace\\newsparkshoesalesdata\\inventory.csv"
+    val source3 = "https://github.com/shankybit/newmachinelearningcsvandneo/blob/c31110032749a5596cd2805a6c870b6f5cd05f40/inventory.csv"
     val users_df_3 = spark.read.options(Map("inferSchema" -> "true", "header" -> "true")).csv(source3)
 
     users_df_1.show(10, false)
