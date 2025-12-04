@@ -1,0 +1,589 @@
+// NOTE: The following script syntax is valid for database version 5.0 and above.
+
+:param {
+  // Define the file path root and the individual file names required for loading.
+  // https://neo4j.com/docs/operations-manual/current/configuration/file-locations/
+  file_path_root: 'C:/Users/Admin/workspace_scala/newmachinelearningcsvandneo', // Change this to the folder your script can access the files at.
+  file_0: 'shoes.csv',
+  file_1: 'inventory.csv',
+  file_2: 'sales.csv',
+  file_3: 'sales_targets.csv'
+};
+
+// CONSTRAINT creation
+// -------------------
+//
+// Create node uniqueness constraints, ensuring no duplicates for the given node label and ID property exist in the database. This also ensures no duplicates are introduced in future.
+//
+CREATE CONSTRAINT `category_Category_uniq` IF NOT EXISTS
+FOR (n: `Category`)
+REQUIRE (n.`category`) IS UNIQUE;
+CREATE CONSTRAINT `color_Color_uniq` IF NOT EXISTS
+FOR (n: `Color`)
+REQUIRE (n.`color`) IS UNIQUE;
+CREATE CONSTRAINT `size_Size_uniq` IF NOT EXISTS
+FOR (n: `Size`)
+REQUIRE (n.`size`) IS UNIQUE;
+CREATE CONSTRAINT `price_Price_uniq` IF NOT EXISTS
+FOR (n: `Price`)
+REQUIRE (n.`price`) IS UNIQUE;
+CREATE CONSTRAINT `shoe_id_Shoe_ID_uniq` IF NOT EXISTS
+FOR (n: `Shoe_ID`)
+REQUIRE (n.`shoe_id`) IS UNIQUE;
+CREATE CONSTRAINT `sale_id_Sale_ID_uniq` IF NOT EXISTS
+FOR (n: `Sale_ID`)
+REQUIRE (n.`sale_id`) IS UNIQUE;
+CREATE CONSTRAINT `branch_id_Branch_ID_uniq` IF NOT EXISTS
+FOR (n: `Branch_ID`)
+REQUIRE (n.`branch_id`) IS UNIQUE;
+CREATE CONSTRAINT `sale_date_Sale_DATE_uniq` IF NOT EXISTS
+FOR (n: `Sale_DATE`)
+REQUIRE (n.`sale_date`) IS UNIQUE;
+CREATE CONSTRAINT `quantity_sold_Quantity_SOLD_uniq` IF NOT EXISTS
+FOR (n: `Quantity_SOLD`)
+REQUIRE (n.`quantity_sold`) IS UNIQUE;
+CREATE CONSTRAINT `total_price_Total_PRICE_uniq` IF NOT EXISTS
+FOR (n: `Total_PRICE`)
+REQUIRE (n.`total_price`) IS UNIQUE;
+CREATE CONSTRAINT `month_Month_uniq` IF NOT EXISTS
+FOR (n: `Month`)
+REQUIRE (n.`month`) IS UNIQUE;
+CREATE CONSTRAINT `units_target_Units_TARGET_uniq` IF NOT EXISTS
+FOR (n: `Units_TARGET`)
+REQUIRE (n.`units_target`) IS UNIQUE;
+CREATE CONSTRAINT `sales_target_Sales_TARGET_uniq` IF NOT EXISTS
+FOR (n: `Sales_TARGET`)
+REQUIRE (n.`sales_target`) IS UNIQUE;
+CREATE CONSTRAINT `quantity_in_stock_Quantity_IN_STOCK_uniq` IF NOT EXISTS
+FOR (n: `Quantity_IN_STOCK`)
+REQUIRE (n.`quantity_in_stock`) IS UNIQUE;
+CREATE CONSTRAINT `reorder_level_Reorder_LEVEL_uniq` IF NOT EXISTS
+FOR (n: `Reorder_LEVEL`)
+REQUIRE (n.`reorder_level`) IS UNIQUE;
+
+:param {
+  idsToSkip: []
+};
+
+// NODE load
+// ---------
+//
+// Load nodes in batches, one node label at a time. Nodes will be created using a MERGE statement to ensure a node with the same label and ID property remains unique. Pre-existing nodes found by a MERGE statement will have their other properties set to the latest values encountered in a load file.
+//
+// NOTE: Any nodes with IDs in the 'idsToSkip' list parameter will not be loaded.
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+WHERE NOT row.`category` IN $idsToSkip AND NOT row.`category` IS NULL
+CALL (row) {
+  MERGE (n: `Category` { `category`: row.`category` })
+  SET n.`category` = row.`category`
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+WHERE NOT row.`color` IN $idsToSkip AND NOT row.`color` IS NULL
+CALL (row) {
+  MERGE (n: `Color` { `color`: row.`color` })
+  SET n.`color` = row.`color`
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+WHERE NOT row.`size` IN $idsToSkip AND NOT toInteger(trim(row.`size`)) IS NULL
+CALL (row) {
+  MERGE (n: `Size` { `size`: toInteger(trim(row.`size`)) })
+  SET n.`size` = toInteger(trim(row.`size`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+WHERE NOT row.`price` IN $idsToSkip AND NOT toInteger(trim(row.`price`)) IS NULL
+CALL (row) {
+  MERGE (n: `Price` { `price`: toInteger(trim(row.`price`)) })
+  SET n.`price` = toInteger(trim(row.`price`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+WHERE NOT row.`shoe_id` IN $idsToSkip AND NOT row.`shoe_id` IS NULL
+CALL (row) {
+  MERGE (n: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  SET n.`shoe_id` = row.`shoe_id`
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+WHERE NOT row.`sale_id` IN $idsToSkip AND NOT toInteger(trim(row.`sale_id`)) IS NULL
+CALL (row) {
+  MERGE (n: `Sale_ID` { `sale_id`: toInteger(trim(row.`sale_id`)) })
+  SET n.`sale_id` = toInteger(trim(row.`sale_id`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+WHERE NOT row.`branch_id` IN $idsToSkip AND NOT toInteger(trim(row.`branch_id`)) IS NULL
+CALL (row) {
+  MERGE (n: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  SET n.`branch_id` = toInteger(trim(row.`branch_id`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+WHERE NOT row.`sale_date` IN $idsToSkip AND NOT row.`sale_date` IS NULL
+CALL (row) {
+  MERGE (n: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  SET n.`sale_date` = row.`sale_date`
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+WHERE NOT row.`quantity_sold` IN $idsToSkip AND NOT toInteger(trim(row.`quantity_sold`)) IS NULL
+CALL (row) {
+  MERGE (n: `Quantity_SOLD` { `quantity_sold`: toInteger(trim(row.`quantity_sold`)) })
+  SET n.`quantity_sold` = toInteger(trim(row.`quantity_sold`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+WHERE NOT row.`total_price` IN $idsToSkip AND NOT toInteger(trim(row.`total_price`)) IS NULL
+CALL (row) {
+  MERGE (n: `Total_PRICE` { `total_price`: toInteger(trim(row.`total_price`)) })
+  SET n.`total_price` = toInteger(trim(row.`total_price`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+WHERE NOT row.`month` IN $idsToSkip AND NOT row.`month` IS NULL
+CALL (row) {
+  MERGE (n: `Month` { `month`: row.`month` })
+  SET n.`month` = row.`month`
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+WHERE NOT row.`units_target` IN $idsToSkip AND NOT toInteger(trim(row.`units_target`)) IS NULL
+CALL (row) {
+  MERGE (n: `Units_TARGET` { `units_target`: toInteger(trim(row.`units_target`)) })
+  SET n.`units_target` = toInteger(trim(row.`units_target`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+WHERE NOT row.`sales_target` IN $idsToSkip AND NOT toInteger(trim(row.`sales_target`)) IS NULL
+CALL (row) {
+  MERGE (n: `Sales_TARGET` { `sales_target`: toInteger(trim(row.`sales_target`)) })
+  SET n.`sales_target` = toInteger(trim(row.`sales_target`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+WHERE NOT row.`quantity_in_stock` IN $idsToSkip AND NOT toInteger(trim(row.`quantity_in_stock`)) IS NULL
+CALL (row) {
+  MERGE (n: `Quantity_IN_STOCK` { `quantity_in_stock`: toInteger(trim(row.`quantity_in_stock`)) })
+  SET n.`quantity_in_stock` = toInteger(trim(row.`quantity_in_stock`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+WHERE NOT row.`reorder_level` IN $idsToSkip AND NOT toInteger(trim(row.`reorder_level`)) IS NULL
+CALL (row) {
+  MERGE (n: `Reorder_LEVEL` { `reorder_level`: toInteger(trim(row.`reorder_level`)) })
+  SET n.`reorder_level` = toInteger(trim(row.`reorder_level`))
+} IN TRANSACTIONS OF 10000 ROWS;
+
+
+// RELATIONSHIP load
+// -----------------
+//
+// Load relationships in batches, one relationship type at a time. Relationships are created using a MERGE statement, meaning only one relationship of a given type will ever be created between a pair of nodes.
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Size` { `size`: toInteger(trim(row.`size`)) })
+  MATCH (target: `Color` { `color`: row.`color` })
+  MERGE (source)-[r: `COLOR_IN_SIZE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Category` { `category`: row.`category` })
+  MATCH (target: `Color` { `color`: row.`color` })
+  MERGE (source)-[r: `COLOR_IN_CATEGORY`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Color` { `color`: row.`color` })
+  MATCH (target: `Price` { `price`: toInteger(trim(row.`price`)) })
+  MERGE (source)-[r: `PRICE_IN_COLOR`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Category` { `category`: row.`category` })
+  MERGE (source)-[r: `FIND_CATEGORY`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Price` { `price`: toInteger(trim(row.`price`)) })
+  MERGE (source)-[r: `FIND_PRICE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Size` { `size`: toInteger(trim(row.`size`)) })
+  MERGE (source)-[r: `FIND_SIZE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Color` { `color`: row.`color` })
+  MERGE (source)-[r: `FIND_COLOR`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Color` { `color`: row.`color` })
+  MATCH (target: `Category` { `category`: row.`category` })
+  MERGE (source)-[r: `CATEGORY_IN_COLOR`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Category` { `category`: row.`category` })
+  MATCH (target: `Size` { `size`: toInteger(trim(row.`size`)) })
+  MERGE (source)-[r: `SIZE_IN_CATEGORY`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Size` { `size`: toInteger(trim(row.`size`)) })
+  MATCH (target: `Category` { `category`: row.`category` })
+  MERGE (source)-[r: `CATEGORY_IN_SIZE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Size` { `size`: toInteger(trim(row.`size`)) })
+  MATCH (target: `Price` { `price`: toInteger(trim(row.`price`)) })
+  MERGE (source)-[r: `PRICE_FOR_SIZE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Color` { `color`: row.`color` })
+  MATCH (target: `Size` { `size`: toInteger(trim(row.`size`)) })
+  MERGE (source)-[r: `SIZE_IN_COLOR`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Sale_ID` { `sale_id`: toInteger(trim(row.`sale_id`)) })
+  MATCH (target: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MERGE (source)-[r: `BRANCH_ID_FROM_SALE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Sale_ID` { `sale_id`: toInteger(trim(row.`sale_id`)) })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MERGE (source)-[r: `SHOE_ID_MADE_SALE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Sale_ID` { `sale_id`: toInteger(trim(row.`sale_id`)) })
+  MERGE (source)-[r: `SALE_ID_FOR_SHOE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Sale_ID` { `sale_id`: toInteger(trim(row.`sale_id`)) })
+  MATCH (target: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  MERGE (source)-[r: `SALE_DATE_FROM_SALE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Sale_ID` { `sale_id`: toInteger(trim(row.`sale_id`)) })
+  MATCH (target: `Quantity_SOLD` { `quantity_sold`: toInteger(trim(row.`quantity_sold`)) })
+  MERGE (source)-[r: `QUANTITY_SOLDFROM_SALE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Sale_ID` { `sale_id`: toInteger(trim(row.`sale_id`)) })
+  MATCH (target: `Total_PRICE` { `total_price`: toInteger(trim(row.`total_price`)) })
+  MERGE (source)-[r: `TOTAL_PRICE_FROM_SALE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Total_PRICE` { `total_price`: toInteger(trim(row.`total_price`)) })
+  MERGE (source)-[r: `TOTAL_PRICE_FROM_BRANCH`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Quantity_SOLD` { `quantity_sold`: toInteger(trim(row.`quantity_sold`)) })
+  MERGE (source)-[r: `QUANTITY_SOLD_FROM_BRANCH`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  MATCH (target: `Quantity_SOLD` { `quantity_sold`: toInteger(trim(row.`quantity_sold`)) })
+  MERGE (source)-[r: `QUANTITY_SOLD_ON_DATE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Quantity_SOLD` { `quantity_sold`: toInteger(trim(row.`quantity_sold`)) })
+  MATCH (target: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  MERGE (source)-[r: `SALE_DATE_QUANTITY_SOLD`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  MERGE (source)-[r: `SALE_FOR_BRANCH_ID_ON_DATE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  MATCH (target: `Total_PRICE` { `total_price`: toInteger(trim(row.`total_price`)) })
+  MERGE (source)-[r: `TOTAL_PRICE_SALE_DATE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Total_PRICE` { `total_price`: toInteger(trim(row.`total_price`)) })
+  MATCH (target: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  MERGE (source)-[r: `SALE_DATE_TOTAL_PRICE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Units_TARGET` { `units_target`: toInteger(trim(row.`units_target`)) })
+  MERGE (source)-[r: `UNIT_TARGETS_WITH_BRANCH_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Units_TARGET` { `units_target`: toInteger(trim(row.`units_target`)) })
+  MATCH (target: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MERGE (source)-[r: `BRANCH_ID_FOR_UNITS_TARGET`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  MERGE (source)-[r: `SALE_DATE_FOR_SHOE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Sale_DATE` { `sale_date`: row.`sale_date` })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MERGE (source)-[r: `SHOE_ID_FOR_SALE_DATE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Quantity_SOLD` { `quantity_sold`: toInteger(trim(row.`quantity_sold`)) })
+  MERGE (source)-[r: `QUANTITY_SOLD_FROM_SHOE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MERGE (source)-[r: `BRANCH_IDFROM_SHOE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MERGE (source)-[r: `SHOE_ID_FROM_BRANCH_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Total_PRICE` { `total_price`: toInteger(trim(row.`total_price`)) })
+  MERGE (source)-[r: `TOTAL_PRICE_FROM_SHOE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Total_PRICE` { `total_price`: toInteger(trim(row.`total_price`)) })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MERGE (source)-[r: `SHOE_ID_FROM_TOTAL_PRICE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Quantity_SOLD` { `quantity_sold`: toInteger(trim(row.`quantity_sold`)) })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`sale_id` })
+  MERGE (source)-[r: `SHOE_ID_FROM_QUANTITY_SOLD`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Month` { `month`: row.`month` })
+  MERGE (source)-[r: `MONTH_FROM_BRANCH_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Sales_TARGET` { `sales_target`: toInteger(trim(row.`sales_target`)) })
+  MERGE (source)-[r: `SALES_TARGET_FROM_BRANCH_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Month` { `month`: row.`month` })
+  MATCH (target: `Sales_TARGET` { `sales_target`: toInteger(trim(row.`sales_target`)) })
+  MERGE (source)-[r: `SALES_TARGET_IN_MONTH`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Sale_ID` { `sale_id`: toInteger(trim(row.`sale_id`)) })
+  MERGE (source)-[r: `SALE_ID_FROM_BRANCH_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_3) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Month` { `month`: row.`month` })
+  MATCH (target: `Units_TARGET` { `units_target`: toInteger(trim(row.`units_target`)) })
+  MERGE (source)-[r: `UNITS_TARGET_IN_A_MONTH`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Quantity_IN_STOCK` { `quantity_in_stock`: toInteger(trim(row.`quantity_in_stock`)) })
+  MERGE (source)-[r: `QUANTITY_IN_STOCK_FOR_BRANCH_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Reorder_LEVEL` { `reorder_level`: toInteger(trim(row.`reorder_level`)) })
+  MERGE (source)-[r: `REORDER_LEVEL_FOR_BRANCH_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Quantity_IN_STOCK` { `quantity_in_stock`: toInteger(trim(row.`quantity_in_stock`)) })
+  MERGE (source)-[r: `QUANTITY_IN_STOCK_FOR_SHOE_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_1) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Reorder_LEVEL` { `reorder_level`: toInteger(trim(row.`reorder_level`)) })
+  MERGE (source)-[r: `REORDER_LEVL_FOR_BRANCH_ID`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Category` { `category`: row.`category` })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MERGE (source)-[r: `SHOE_ID_FOR_CATEGORY`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Color` { `color`: row.`color` })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MERGE (source)-[r: `SHOE_ID_FOR_COLOR`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_0) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Size` { `size`: toInteger(trim(row.`size`)) })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MERGE (source)-[r: `SHOE_ID_FOR_SIZE`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MATCH (target: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MERGE (source)-[r: `SHOE_ID_FROM_BRANCH_ID_SALES`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;
+
+LOAD CSV WITH HEADERS FROM ($file_path_root + $file_2) AS row
+WITH row
+CALL (row) {
+  MATCH (source: `Shoe_ID` { `shoe_id`: row.`shoe_id` })
+  MATCH (target: `Branch_ID` { `branch_id`: toInteger(trim(row.`branch_id`)) })
+  MERGE (source)-[r: `BRANCH_ID_FROM_SHOE_ID_SALES`]->(target)
+} IN TRANSACTIONS OF 10000 ROWS;

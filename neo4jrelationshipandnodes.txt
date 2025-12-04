@@ -1,0 +1,84 @@
+//-----------------------Relationships-----------------------------------//
+
+(sid:Sale_ID)-[:BRANCH_ID_FROM_SALE_ID]->(b:Branch_ID)                  ..(sales.csv)
+(sid:Sale_ID)-[:SHOE_ID_MADE_SALE]->(sh:Shoe_ID)                        ..(sales.csv)
+(sid:Sale_ID)-[:SALE_DATE_FROM_SALE_ID]->(sd:Sale_DATE)                 ..(sales.csv)
+(sid:Sale_ID)-[:QUANTITY_SOLDFROM_SALE_ID]->(qu:Quantity_SOLD)          ..(sales.csv)
+(sid:Sale_ID)-[:TOTAL_PRICE_FROM_SALE_ID]->(t:Total_PRICE)              ..(sales.csv)
+
+(b:Branch_ID)-[:TOTAL_PRICE_FROM_BRANCH]->(t:Total_PRICE)               ..(sales.csv)
+(b:Branch_ID)-[:SALE_ID_FROM_BRANCH_ID]->(sd:Sale_DATE)                 ..(sales.csv)
+(b:Branch_ID)-[:SALE_FOR_BRANCH_ID_ON_DATE]->(sd:Sale_DATE)             ..(sales.csv)
+(b:Branch_ID)-[:SHOE_ID_FROM_BRANCH_ID]->(sh:Shoe_ID)                   ..(inventory.csv)
+(b:Branch_ID)-[:SHOE_ID_FROM_BRANCH_ID_SALES]->(sh:Shoe_ID)             ..(sales.csv)
+(b:Branch_ID)-[:QUANTITY_IN_STOCK_FOR_BRANCH_ID]->(q:Quantity_IN_STOCK) ..(inventory.csv)
+(b:Branch_ID)-[:REORDER_LEVL_FOR_BRANCH_ID]->(r:Reorder_LEVEL)          ..(inventory.csv)
+(b:Branch_ID)-[:UNIT_TARGETS_WITH_BRANCH_ID]->(u:Units_TARGET)          ..(sales_targets.csv)
+(b:Branch_ID)-[:SALES_TARGET_FROM_BRANCH_ID]->(s:Sales_TARGET)          ..(sales_targets.csv)
+(b:Branch_ID)-[:MONTH_FROM_BRANCH_ID]->(m:Month)                        ..(sales_targets.csv)
+(b:Branch_ID)-[:TOTAL_PRICE_FROM_BRANCH]->(t:Total_PRICE)               ..(sales.csv)
+
+(sh:Shoe_ID)-[:TOTAL_PRICE_FROM_SHOE_ID]->(t:Total_PRICE)               ..(sales.csv)
+(sh:Shoe_ID)-[:SALE_ID_FOR_SHOE_ID]->(sid:Sale_ID)                      ..(sales.csv)
+(sh:Shoe_ID)-[:QUANTITY_SOLD_FROM_SHOE_ID]->(qu:Quantity_SOLD)          ..(sales.csv)
+(sh:Shoe_ID)-[:SALE_DATE_FOR_SHOE_ID]->(sd:Sale_DATE)                   ..(sales.csv)
+(sh:Shoe_ID)-[:FIND_CATEGORY]->(c:Category)                             ..(shoes.csv)
+(sh:Shoe_ID)-[:FIND_SIZE]->(s:Size)                                     ..(shoes.csv)
+(sh:Shoe_ID)-[:FIND_COLOR]->(clr:Color)                                 ..(shoes.csv)
+(sh:Shoe_ID)-[:FIND_PRICE]->(p:Price)                                   ..(shoes.csv)
+(sh:Shoe_ID)-[:REORDER_LEVEL_FOR_SHOE_ID]->(r:Reorder_LEVEL)            ..(inventory.csv)
+(sh:Shoe_ID)-[:QUANTITY_IN_STOCK_FOR_SHOE_ID]->(q:Quantity_IN_STOCK)    ..(inventory.csv)
+(sh:Shoe_ID)-[:BRANCH_ID_FROM_SHOE_ID_SALES]->(b:Branch_ID)             ..(sales.csv)
+(sh:Shoe_ID)-[:BRANCH_IDFROM_SHOE_ID]->(b:Branch_ID)                    ..(inventory.csv)
+
+(sd:Sale_DATE)-[:QUANTITY_SOLD_ON_DATE]->(qu:Quantity_SOLD)             ..(sales.csv)
+(sd:Sale_DATE)-[:TOTAL_PRICE_SALE_DATE]->(t:Total_PRICE)                ..(sales.csv)
+(sd:Sale_DATE)-[:SHOE_ID_FOR_SALE_DATE]->(sh:Shoe_ID)                   ..(sales.csv)
+
+(qu:Quantity_SOLD)-[:SALE_DATE_QUANTITY_SOLD]->(sd:Sale_DATE)           ..(sales.csv)
+(qu:Quantity_SOLD)-[:SHOE_ID_FROM_QUANTITY_SOLD]->(sh:Shoe_ID)          ..(sales.csv)
+
+(t:Total_PRICE)-[:SALE_DATE_TOTAL_PRICE]->(sd:Sale_DATE)                ..(sales.csv)
+(t:Total_PRICE)-[:SHOE_ID_FROM_TOTAL_PRICE]->(sh:Shoe_ID)               ..(sales.csv)
+
+(m:Month)-[:SALES_TARGET_IN_MONTH]->(st:Sales_TARGET)                   ..(sales_targets.csv)
+(m:Month)-[:UNITS_TARGET_IN_A_MONTH]->(u:Units_TARGET)                  ..(sales_targets.csv)
+
+(u:Units_TARGET)-[:BRANCH_ID_FOR_UNITS_TARGET]->(b:Branch_ID)           ..(sales_targets.csv)
+
+(c:Category)-[:SHOE_ID_FOR_CATEGORY]->(sh:Shoe_ID)                      ..(shoes.csv)
+(c:Category)-[:SIZE_IN_CATEGORY]->(s:Size)                              ..(shoes.csv)
+(c:Category)-[:COLOR_IN_CATEGORY]->(clr:Color)                          ..(shoes.csv)
+
+(clr:Color)-[:CATEGORY_IN_COLOR]->(c:Category)                          ..(shoes.csv)
+(clr:Color)-[:SIZE_IN_COLOR]->(s:Size)                                  ..(shoes.csv)
+(clr:Color)-[:SHOE_ID_FOR_COLOR]->(sh:Shoe_ID)                          ..(shoes.csv)
+(clr:Color)-[:PRICE_IN_COLOR]->(p:Price)                                ..(shoes.csv)
+
+(s:Size)-[:CAETGORY_IN_SIZE]->(c:Category)                              ..(shoes.csv)
+(s:Size)-[:PRICE_FOR_SIZE]->(p:Price)                                   ..(shoes.csv)
+(s:Size)-[:SHOE_ID_FOR_SIZE]->(sh:Shoe_ID)                              ..(shoes.csv)
+(s:Size)-[:COLOR_IN_SIZE]->(clr:Color)                                  ..(shoes.csv)
+
+//------------------------------Nodes------------------------------------------//
+
+(b:Branch_ID)
+(sh:Shoe_ID)
+(q:Quantity_IN_STOCK)
+(r:Reorder_LEVEL)
+
+(sid:Sale_ID)
+(b:Branch_ID)
+(sh:Shoe_ID)
+(sd:Sale_DATE)
+(qu:Quantity_SOLD)
+(t:Total_PRICE)
+
+(m:Month)
+(st:Sales_TARGET)
+(u:Units_TARGET)
+
+(c:Category)
+(clr:Color)
+(s:Size)
+(p:Price)
