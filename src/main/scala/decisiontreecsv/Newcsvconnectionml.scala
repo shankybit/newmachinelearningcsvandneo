@@ -29,13 +29,13 @@ object Newcsvconnectionml {
     val currentInstant: Instant = Instant.now() // Represents a point in time
     val currentEpochSeconds: Long = currentInstant.getEpochSecond()
 
-    val source1 = "C:\\Users\\Admin\\Documents\\workspace\\newsparkshoesalesdata\\sales.csv"
+    val source1 = "https://github.com/shankybit/newmachinelearningcsvandneo/blob/3524e590b1d8b47a63cd2660d74f8094a1966675/sales.csv"
     val users_df_1 = spark.read.options(Map("inferSchema" -> "true", "header" -> "true")).csv(source1)
 
-    val source2 = "C:\\Users\\Admin\\Documents\\workspace\\newsparkshoesalesdata\\shoes.csv"
+    val source2 = "https://github.com/shankybit/newmachinelearningcsvandneo/blob/3524e590b1d8b47a63cd2660d74f8094a1966675/shoes.csv"
     val users_df_2 = spark.read.options(Map("inferSchema" -> "true", "header" -> "true")).csv(source2)
 
-    val source3 = "C:\\Users\\Admin\\Documents\\workspace\\newsparkshoesalesdata\\inventory.csv"
+    val source3 = "https://github.com/shankybit/newmachinelearningcsvandneo/blob/3524e590b1d8b47a63cd2660d74f8094a1966675/inventory.csv"
     val users_df_3 = spark.read.options(Map("inferSchema" -> "true", "header" -> "true")).csv(source3)
 
     users_df_1.show(10, false)
