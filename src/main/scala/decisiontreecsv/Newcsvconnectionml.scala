@@ -151,7 +151,7 @@ object Newcsvconnectionml {
 
     // --------------------------------------Decision Tree-------------------------//
 
-    val Array(train, test) = assembledData.randomSplit(Array(0.7, 0.3),seed=1234L)
+    val Array(train, test) = assembledData.randomSplit(Array(0.8, 0.2))
 
 
     import org.apache.spark.ml.classification.DecisionTreeClassifier
