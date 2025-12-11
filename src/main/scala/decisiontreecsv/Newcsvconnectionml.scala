@@ -3,7 +3,7 @@ package decisiontreecsv
 
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.ml.feature.{RFormula, StringIndexer}
-import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder, TrainValidationSplit}
+import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
@@ -182,11 +182,11 @@ object Newcsvconnectionml {
     //-------------------------------------Cross-Validator--------------------------//
 
     // 4. Instantiate CrossValidator
-    val cv = new TrainValidationSplit()
+    val cv = new CrossValidator()
       .setEstimator(decTree)
       .setEvaluator(evaluator)
       .setEstimatorParamMaps(paramGrid)
-      .setTrainRatio(0.8)
+      .setNumFolds(3)
 
 
     val cvModel = cv.fit(train)
